@@ -1,0 +1,120 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>L-System</title>
+
+  <link rel="stylesheet" href="bootstrap.css">
+
+</head>
+
+<body style="word-wrap:break-word;">
+  <script src="p5.js"></script>
+  <script src="main.js"></script>
+  <div class="container">
+    <div class="jumbotron">
+      <h1>L-System</h1>
+      <p>это штука позволяет строить фракталы, используя простые правила</p>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-body" id="mycanvas"></div>
+    </div>
+    <div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="panel panel-info">
+              <div class="panel-heading">Настройки L-System </div>
+              <div class="panel-body">
+                <label for="usr">Аксиомы:</label>
+                <input type="text" class="form-control" id="axiom" value="G">
+                <label for="usr">Правила:</label>
+                <input type="text" class="form-control" id="rule" value="F=FF,G=F[+G]-G">
+                <label for="usr">Количество итераций:</label>
+                <input type="text" class="form-control" id="iterations" value="4">
+                <p></p>
+                <input type="submit" id="Submit" value="Вернуться в начало координат" class="btn btn-info" onclick="returnBack()"">
+                <input type="submit" id="Submit" value="Показать пути" class="btn btn-info" onclick="showPath()"">
+              </div>
+            </div>
+          </div>
+          <div class=" col-sm-4">
+                <div class="panel panel-info">
+                  <div class="panel-heading">Настройки отображения</div>
+                  <div class="panel-body">
+                    <label for="usr">Угол поворота:</label>
+                    <input type="text" class="form-control" id="angle" value="45">
+                    <div id="myslider"></div>
+                    <label for="usr">Изначальный угол поворота:</label>
+                    <input type="text" class="form-control" id="starting-angle" value="90">
+                    <label for="usr">Длина линий:</label>
+                    <input type="text" class="form-control" id="line-length" value="20">
+                    <label for="usr">Толщина линий:</label>
+                    <input type="text" class="form-control" id="line-width" value="4">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="panel panel-warning">
+                <div class="panel-heading">Логи</div>
+                <div class="panel-body">
+                  <p id="logs">Пока тут пусто</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <div class="panel panel-success">
+                <div class="panel-heading">Примеры</div>
+                <div class="panel-body">
+                  <div class="list-group">
+                    <a href="#" class="list-group-item" onclick="loadTree()">Fractal tree</a>
+                    <a href="#" class="list-group-item" onclick="loadKochCurve90()">Koch curve 90 degrees</a>
+                    <a href="#" class="list-group-item" onclick="loadKochCurve60()">Koch curve (другая)</a>
+                    <a href="#" class="list-group-item" onclick="loadKochSnowflake()">Koch snowflake</a>
+                    <a href="#" class="list-group-item" onclick="loadSierpinskiTriangle()">Sierpinski triangle</a>
+                    <a href="#" class="list-group-item" onclick="loadSierpinskiArrowhead()">Sierpiński arrowhead curve</a>
+                    <a href="#" class="list-group-item" onclick="loadDragon()">Dragon curve</a>
+                    <a href="#" class="list-group-item" onclick="loadHilbert()">Hilbert curve</a>
+                    <a href="#" class="list-group-item" onclick="loadGosper()">Gosper curve</a>
+                    <a href="#" class="list-group-item" onclick="loadSierpinski()">Sierpinski curve(нет)</a>
+                    <a href="#" class="list-group-item" onclick="loadPenrose()">Penrose tiling</a>
+                    <a href="#" class="list-group-item" onclick="loadError()">Icy fractal</a>
+                  </div> 
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="panel panel-default">
+                <div class="panel-heading">Как пользоваться</div>
+                <div class="panel-body">
+                  <p><b>В чем соль?</b> По заданной строке (например, F++F) строится изображение. Данные строки можно изменять по заданным пользователем правилам (например, F=F++F). Изменяя количество раз применения операции замены строки по правилам, изображение меняется.</p>
+                  <p><b>Как происходит замена?</b> Алгоритм проходит по каждому символу пока не находит тот, что есть в словаре замен. Как только алгоритм находит совпадение, оно заменяется значением из словаря. Для создания словаря замен нужно следовать следующему синтаксису.</p>
+                  <p><b>Синтаксис словаря:</b> первое правило,второе правило,… Где каждое правило строится так: переменная=строка замены. Напрмер, F=FF,G=F[+G]-G - это рабочий словарь</p>
+                  <p><b>Зарезервированные переменные:</b> <b>F и G</b> - нарисовать линию вперед, <b>- и +</b> - повернуть на по или против часовой стрелки на заданный угол, <b>[</b> - сохранить текущую позицию и угол, <b>]</b> - вернуться в предыдущее сохраненное место с тем углом, <b>D</b> - перейти вперед, не рисуя, <b>остальное</b> не будет влиять на отображение. </p>
+                  <p><b>Особенности интерфейса:</b> Сверху под названием находится поле для отображения, тут будет находиться конечное изображение, по нему можно перемешаться если тыкнуть по нему и подвигать мышкой или пальцем. Снизу есть Настройки L-System, в них можно настроить поведение преобразователя строк. Справа находятся натсройки отображения, тут понятно. Ниже есть кнопки, одна возвращает камеру в начальное положение, другая добавляет цвета отображению. Еще ниже можно увидеть то как строки изменялись с ростом количества преобразований. Правее находятся примеры l-system (некоторые из них сделаны мной, поэтому они могут отличатся от настоящих).</p>
+                  <p><b>Аксиомы</b> - это изначальная строка.</p>
+                  <p><b>Правила</b> - это словарь замен.</p>
+                  <p><b>Количество итераций</b> - это количество раз применения словаря.</p>
+                  <p><b>Угол поворота</b> - это угол поворота для + и - переменных.</p>
+                  <p><b>Изначальный угол поворота</b> - тут понятно.</p>
+                  <p><b>Длина линий</b> - это длина линий в пикселях.</p>
+                  <p><b>Толщина линий</b> - это толщина линий в пикселях (вроде).</p>
+                  <p><b>Историческая справка:</b> Lindenmayer system была предложена и использована Аристидом Линденмайером, венгерским биологом, для моделирования поведения клеток и для моделирования развития растений.</p>
+                  <p><b>P.S.</b> измененные настройки применяются в реальном времени, если этого не происходит, то нужно покрутить слайдер угла поворота.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</body>
+
+</html>
