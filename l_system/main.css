@@ -1,0 +1,11 @@
+.jumbotron{
+    box-shadow: 7px 7px 5px lightgrey;
+  }
+  .panel{
+    box-shadow: 7px 7px 5px lightgrey;
+    border-width: 2px;
+    border-radius: 4px;
+  }
+  .btn{
+    margin-bottom: 0.2em;
+  }

@@ -8,18 +8,18 @@
   <title>L-System</title>
 
   <link rel="stylesheet" href="bootstrap.css">
-
+  <link rel="stylesheet" href="main.css">
 </head>
 
-<body style="word-wrap:break-word;">
+<body style="word-wrap:break-word; background-color:snow;">
   <script src="p5.js"></script>
   <script src="main.js"></script>
-  <div class="container">
+  <div class="container" style="padding-top: 15px;">
     <div class="jumbotron">
       <h1>L-System</h1>
       <p>это штука позволяет строить фракталы, используя простые правила</p>
     </div>
-    <div class="panel panel-default">
+    <div class="panel panel-default border-20" id="wrapper">
       <div class="panel-body" id="mycanvas"></div>
     </div>
     <div>
@@ -36,8 +36,8 @@
                 <label for="usr">Количество итераций:</label>
                 <input type="text" class="form-control" id="iterations" value="4">
                 <p></p>
-                <input type="submit" id="Submit" value="Вернуться в начало координат" class="btn btn-info" onclick="returnBack()"">
-                <input type="submit" id="Submit" value="Показать пути" class="btn btn-info" onclick="showPath()"">
+                <input type="submit" id="Submit" value="Показать пути" class="btn btn-info" onclick="showPath()">
+                <input type="submit" id="changeView" value="Перейти в 3d режим" class="btn btn-info" onclick="changeViewMode()">
               </div>
             </div>
           </div>
@@ -54,6 +54,14 @@
                     <input type="text" class="form-control" id="line-length" value="20">
                     <label for="usr">Толщина линий:</label>
                     <input type="text" class="form-control" id="line-width" value="4">
+                    <div id="sensetivity_thing" style="display:none;">
+                      <label for="usr">Чувствительность: <b id="sensetivity"></b></label>
+                      <div id="myslider2"></div>
+                    </div>
+                    <div id="autorotation_thing" style="display:none;">
+                      <label for="usr">Чувствительность: <b id="autorotation"></b></label>
+                      <div id="myslider3"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -62,14 +70,6 @@
         </div>
         <div>
           <div class="row">
-            <div class="col-sm-4">
-              <div class="panel panel-warning">
-                <div class="panel-heading">Логи</div>
-                <div class="panel-body">
-                  <p id="logs">Пока тут пусто</p>
-                </div>
-              </div>
-            </div>
             <div class="col-sm-2">
               <div class="panel panel-success">
                 <div class="panel-heading">Примеры</div>
@@ -88,6 +88,14 @@
                     <a href="#" class="list-group-item" onclick="loadPenrose()">Penrose tiling</a>
                     <a href="#" class="list-group-item" onclick="loadError()">Icy fractal</a>
                   </div> 
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="panel panel-warning">
+                <div class="panel-heading">Логи</div>
+                <div class="panel-body">
+                  <p id="logs">Пока тут пусто</p>
                 </div>
               </div>
             </div>
