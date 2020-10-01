@@ -1,5 +1,3 @@
-// todo multiple keycodes
-
 var axioms = "";
 var rules = {};
 var iters = 0;
@@ -16,10 +14,9 @@ var prev_mouse_pos = [0, 0];
 var showPaths = 0;
 var sensitivity = 0.5;
 var cam;
-var isRotationg = false;
-var cam_ang1 = 0;
+var cam_ang1 = 3.14;
 var cam_ang2 = 0;
-var cam_pos = [0,0,100];
+var cam_pos = [0, 0, 100];
 var cam_vel = 100;
 var infinity = 100000000000;
 var key_clicked = false;
@@ -34,39 +31,20 @@ function setup() {
   slider.parent("myslider");
   slider2 = createSlider(0, 2, 1, 0.05);
   slider2.parent("myslider2");
+  slider3 = createSlider(0, 400, 100, 1);
+  slider3.parent("myslider3");
   my_canvas.parent("mycanvas");
   cam = createCamera();
-  cam.setPosition(cam_pos[0],cam_pos[1],cam_pos[2]);
+  cam.setPosition(cam_pos[0], cam_pos[1], cam_pos[2]);
   cam.ortho();
-  cam.lookAt(0,0,0);
+  cam.lookAt(0, 0, 0);
   setCamera(cam);
   frameRate(30);
 }
 
 function draw() {
-  /*
-  background(204);
-//move the camera away from the plane by a sin wave
-cam2 = createCamera();
-cam2.setPosition(sin(frameCount*0.01)*100, 0, cos(frameCount*0.01)*100);
-cam2.lookAt(0, 0, 0);
-cam2.perspective(PI/3.0,1.0,0.1,500);
-plane(100,100);
-setCamera(cam2);*/
   updateSlider();
   clear();
-  /*
-    F - line
-    G - another line
-    L - leaf
-    B - branch
-    D - go forward
-    + - turn clockwise
-    - - turn counter
-    [ - push current position and angle
-    ] - pop current position and angle
-    other - do nothing
-  */
   if (iters != 0) {
     var temp = gens[gens.length - 1];
     var pos = [];
@@ -74,7 +52,6 @@ setCamera(cam2);*/
     var prev_pos = [starting_point[0], starting_point[1], starting_point[2]];
     var prev_ang = parseFloat(document.getElementById("starting-angle").value);
     var prev_ang2 = 0;
-    var prev = 0;
     for (let i = 0; i < temp.length; i++) {
 
       const element = temp[i];
@@ -92,7 +69,6 @@ setCamera(cam2);*/
           vertex(prev_pos[0], prev_pos[1], prev_pos[2]);
           vertex(prev_pos[0] + Math.cos(prev_ang * PI / 180) * line_length, prev_pos[1] - Math.sin(prev_ang * PI / 180) * line_length, prev_pos[2] - Math.sin(prev_ang2 * PI / 180) * line_length);
           endShape();
-          //console.log(sensitivity);
         } else {
           line(prev_pos[0], prev_pos[1], prev_pos[0] + Math.cos(prev_ang * PI / 180) * line_length, prev_pos[1] - Math.sin(prev_ang * PI / 180) * line_length);
         }
@@ -158,7 +134,7 @@ function send() {
   }
 
 }
-function parseRules(inp) { // a=ba,b=ab
+function parseRules(inp) {
   rules = {};
   var data = inp.split(",");
   data.forEach(element => {
@@ -191,58 +167,67 @@ function generate() {
 function updateSlider() {
   document.getElementById("angle").value = slider.value();
   document.getElementById("sensetivity").innerHTML = slider2.value();
+  document.getElementById("speed").innerHTML = slider3.value();
   sensitivity = slider2.value();
+  cam_vel = slider3.value();
   send();
 }
-function updateCam(){
-  if(isRotationg){
-    cam.setPosition(sin(frameCount*0.01)*100, 0, cos(frameCount*0.01)*100);
-    cam.lookAt(0,0,0);
+function updateCam() {
+  if (key_clicked) {
+    if (key_keyCode == 65) { // a
+      cam_pos[0] += sin(cam_ang1 + PI / 2) * cam_vel / deltaTime;
+      cam_pos[2] += cos(cam_ang1 + PI / 2) * cam_vel / deltaTime;
+    }
+    if (key_keyCode == 87) { //w
+      cam_pos[0] += sin(cam_ang1) * cam_vel / deltaTime;
+      cam_pos[1] += sin(cam_ang2) * cam_vel / deltaTime;
+      cam_pos[2] += cos(cam_ang1) * cam_vel / deltaTime;
+    }
+    if (key_keyCode == 83) { // s
+      cam_pos[0] -= sin(cam_ang1) * cam_vel / deltaTime;
+      cam_pos[1] -= sin(cam_ang2) * cam_vel / deltaTime;
+      cam_pos[2] -= cos(cam_ang1) * cam_vel / deltaTime;
+    }
+    if (key_keyCode == 68) { // d
+      cam_pos[0] += sin(cam_ang1 - PI / 2) * cam_vel / deltaTime;
+      cam_pos[2] += cos(cam_ang1 - PI / 2) * cam_vel / deltaTime;
+    }
+    if (key_keyCode == 17) { // ctrl
+      cam_pos[1] += sin(min(cam_ang2 + PI / 2, PI / 2)) * cam_vel / deltaTime;
+    }
+    if (key_keyCode == 16) { // shift
+      cam_pos[1] += sin(max(cam_ang2 - PI / 2, -PI / 2)) * cam_vel / deltaTime;
+    }
+    cam.setPosition(cam_pos[0], cam_pos[1], cam_pos[2]);
   }
-  else{
-    if(key_clicked){
-      if(key_keyCode == 65){ // a
-        cam_pos[0] += sin(cam_ang1+PI/2)*cam_vel/deltaTime;
-        //cam_pos[1] += sin(cam_ang2)*cam_vel;
-        cam_pos[2] += cos(cam_ang1+PI/2)*cam_vel/deltaTime;
-    }
-    if(key_keyCode == 87){ //w
-        cam_pos[0] += sin(cam_ang1)*cam_vel/deltaTime;
-        cam_pos[1] += sin(cam_ang2)*cam_vel/deltaTime;
-        cam_pos[2] += cos(cam_ang1)*cam_vel/deltaTime;
-    }
-    if(key_keyCode == 83){ // s
-      cam_pos[0] -= sin(cam_ang1)*cam_vel/deltaTime;
-        cam_pos[1] -= sin(cam_ang2)*cam_vel/deltaTime;
-        cam_pos[2] -= cos(cam_ang1)*cam_vel/deltaTime;
-    }
-    if(key_keyCode == 68){ // d
-      cam_pos[0] += sin(cam_ang1-PI/2)*cam_vel/deltaTime;
-        //cam_pos[1] += sin(cam_ang2)*cam_vel;
-        cam_pos[2] += cos(cam_ang1-PI/2)*cam_vel/deltaTime;
-    }
-    if(key_keyCode == 17){ // ctrl
-        cam_pos[1] += sin(min(cam_ang2+PI/2,PI/2))*cam_vel/deltaTime;
-    }
-    if(key_keyCode == 16){ // shift
-        cam_pos[1] += sin(max(cam_ang2-PI/2,-PI/2))*cam_vel/deltaTime;
-    }
-    cam.setPosition(cam_pos[0],cam_pos[1],cam_pos[2]);
-    }
-  }
-  
+
+}
+function goBack() {
+  cam_ang1 = 0;
+  cam_ang2 = 0;
+  cam_pos = [0, 0, 100];
+  prev_ang = 0;
+  prev_ang2 = 0;
+  prev_pos = [0, 0, 100];
+  starting_point = [0, 0, 0];
+  cam.lookAt(0, 0, 0);
+  cam.setPosition(0, 0, 100);
 }
 function changeViewMode() {
   view_mode ^= 1;
   if (view_mode) {
     document.getElementById("changeView").value = "Перейти в 2d режим";
     document.getElementById("sensetivity_thing").style.display = "block";
-    cam.perspective(PI/2,1,0.1,6000);
+    document.getElementById("speed_thing").style.display = "block";
+    cam.perspective(PI / 2, 1, 0.1, 6000);
   } else {
     document.getElementById("changeView").value = "Перейти в 3d режим";
     document.getElementById("sensetivity_thing").style.display = "none";
+    document.getElementById("speed_thing").style.display = "none";
     cam.ortho();
   }
+  goBack();
+
 }
 function logData() {
   document.getElementById("logs").innerHTML = "";
@@ -258,14 +243,12 @@ function touchMoved() {
     if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
       prev_mouse_pos = [mouseX, mouseY];
     }
-    //redraw();
-  }else if(clicked && view_mode){
+  } else if (clicked && view_mode) {
     console.log("asdasdasasd");
-    //cam.pan(movedX*sensitivity);
-    cam.lookAt(sin(cam_ang1)*infinity,sin(cam_ang2)*infinity*2,cos(cam_ang1)*infinity);
-    cam_ang1 -= (mouseX-prev_mouse_pos[0])*sensitivity/deltaTime;
-    cam_ang2 += (mouseY-prev_mouse_pos[1])*sensitivity/deltaTime;
-    cam_ang2 = max(min(cam_ang2,PI/2),-PI/2);
+    cam.lookAt(sin(cam_ang1) * infinity * cos(cam_ang2), sin(cam_ang2) * infinity, cos(cam_ang1) * infinity * cos(cam_ang2));
+    cam_ang1 -= (mouseX - prev_mouse_pos[0]) * sensitivity / deltaTime;
+    cam_ang2 += (mouseY - prev_mouse_pos[1]) * sensitivity / deltaTime;
+    cam_ang2 = max(min(cam_ang2, PI / 2), -PI / 2);
     prev_mouse_pos = [mouseX, mouseY];
   }
 }
@@ -278,16 +261,17 @@ function mousePressed() {
 function mouseReleased() {
   clicked = false;
 }
-function keyPressed(){
-  key_clicked = true;
-  key_keyCode = keyCode;
+function keyPressed() {
+  if (view_mode && clicked) {
+    key_clicked = true;
+    key_keyCode = keyCode;
+  }
 }
-function keyReleased(){
+function keyReleased() {
   key_clicked = false;
 }
 function showPath() {
   showPaths ^= 1;
-  //redraw();
 }
 function loadTree() {
   document.getElementById("axiom").value = "G";
@@ -453,6 +437,19 @@ function loadError() {
   document.getElementById("line-width").value = "4";
   document.getElementById("starting-angle").value = "90";
 
+  starting_point = [0, -300, 0];
+  starting_point[1] += view_width / 2;
+  send();
+}
+function load3DSpiral() {
+  document.getElementById("axiom").value = "F";
+  document.getElementById("rule").value = "F=>F+F<";
+  document.getElementById("iterations").value = "6";
+  document.getElementById("angle").value = "62";
+  document.getElementById("myslider").firstChild.value = "62";
+  document.getElementById("line-length").value = "15";
+  document.getElementById("line-width").value = "4";
+  document.getElementById("starting-angle").value = "90";
   starting_point = [0, -300, 0];
   starting_point[1] += view_width / 2;
   send();

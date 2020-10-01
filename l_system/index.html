@@ -7,17 +7,17 @@
 
   <title>L-System</title>
 
-  <link rel="stylesheet" href="bootstrap.css">
-  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="src/bootstrap.css">
+  <link rel="stylesheet" href="src/main.css">
 </head>
 
 <body style="word-wrap:break-word; background-color:snow;">
-  <script src="p5.js"></script>
-  <script src="main.js"></script>
+  <script src="src/p5.js"></script>
+  <script src="src/main.js"></script>
   <div class="container" style="padding-top: 15px;">
     <div class="jumbotron">
-      <h1>L-System</h1>
-      <p>это штука позволяет строить фракталы, используя простые правила</p>
+      <h1>L-System v2.1</h1>
+      <p>(теперь есть поддержка 3d)</p>
     </div>
     <div class="panel panel-default border-20" id="wrapper">
       <div class="panel-body" id="mycanvas"></div>
@@ -38,6 +38,7 @@
                 <p></p>
                 <input type="submit" id="Submit" value="Показать пути" class="btn btn-info" onclick="showPath()">
                 <input type="submit" id="changeView" value="Перейти в 3d режим" class="btn btn-info" onclick="changeViewMode()">
+                <input type="submit" id="goBack" value="Вернуться в начало" class="btn btn-info" onclick="goBack()">
               </div>
             </div>
           </div>
@@ -58,8 +59,8 @@
                       <label for="usr">Чувствительность: <b id="sensetivity"></b></label>
                       <div id="myslider2"></div>
                     </div>
-                    <div id="autorotation_thing" style="display:none;">
-                      <label for="usr">Чувствительность: <b id="autorotation"></b></label>
+                    <div id="speed_thing" style="display:none;">
+                      <label for="usr">Скорость камеры: <b id="speed"></b></label>
                       <div id="myslider3"></div>
                     </div>
                   </div>
@@ -87,6 +88,7 @@
                     <a href="#" class="list-group-item" onclick="loadSierpinski()">Sierpinski curve(нет)</a>
                     <a href="#" class="list-group-item" onclick="loadPenrose()">Penrose tiling</a>
                     <a href="#" class="list-group-item" onclick="loadError()">Icy fractal</a>
+                    <a href="#" class="list-group-item" onclick="load3DSpiral()">Spiral (3D)</a>
                   </div> 
                 </div>
               </div>
@@ -106,7 +108,7 @@
                   <p><b>В чем соль?</b> По заданной строке (например, F++F) строится изображение. Данные строки можно изменять по заданным пользователем правилам (например, F=F++F). Изменяя количество раз применения операции замены строки по правилам, изображение меняется.</p>
                   <p><b>Как происходит замена?</b> Алгоритм проходит по каждому символу пока не находит тот, что есть в словаре замен. Как только алгоритм находит совпадение, оно заменяется значением из словаря. Для создания словаря замен нужно следовать следующему синтаксису.</p>
                   <p><b>Синтаксис словаря:</b> первое правило,второе правило,… Где каждое правило строится так: переменная=строка замены. Напрмер, F=FF,G=F[+G]-G - это рабочий словарь</p>
-                  <p><b>Зарезервированные переменные:</b> <b>F и G</b> - нарисовать линию вперед, <b>- и +</b> - повернуть на по или против часовой стрелки на заданный угол, <b>[</b> - сохранить текущую позицию и угол, <b>]</b> - вернуться в предыдущее сохраненное место с тем углом, <b>D</b> - перейти вперед, не рисуя, <b>остальное</b> не будет влиять на отображение. </p>
+                  <p><b>Зарезервированные переменные:</b> <b>F и G</b> - нарисовать линию вперед, <b>&minus; и &plus;</b> - повернуть на по или против часовой стрелки на заданный угол, <b>[</b> - сохранить текущую позицию и угол, <b>]</b> - вернуться в предыдущее сохраненное место с тем углом, <b>D</b> - перейти вперед, не рисуя, <b>&lt; и &gt;</b> - повернуть на заданный угол линию в другой плоскости, <b>остальное</b> не будет влиять на отображение. </p>
                   <p><b>Особенности интерфейса:</b> Сверху под названием находится поле для отображения, тут будет находиться конечное изображение, по нему можно перемешаться если тыкнуть по нему и подвигать мышкой или пальцем. Снизу есть Настройки L-System, в них можно настроить поведение преобразователя строк. Справа находятся натсройки отображения, тут понятно. Ниже есть кнопки, одна возвращает камеру в начальное положение, другая добавляет цвета отображению. Еще ниже можно увидеть то как строки изменялись с ростом количества преобразований. Правее находятся примеры l-system (некоторые из них сделаны мной, поэтому они могут отличатся от настоящих).</p>
                   <p><b>Аксиомы</b> - это изначальная строка.</p>
                   <p><b>Правила</b> - это словарь замен.</p>
